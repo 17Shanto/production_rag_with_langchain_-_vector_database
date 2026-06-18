@@ -5,14 +5,16 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 import tempfile
 import shutil
 from dotenv import load_dotenv
-from .config import Config
+from config import Config
 
 load_dotenv()
 
 
 
-if Config.mistral_api_key:
-    embeddings_model = MistralAIEmbeddings(api_key= Config.mistral_api_key,model="mistral-embed-2312")
+if not Config.mistral_api_key:
+    raise ValueError("Mistral API key is missing! Please check your .env file or Config class.")
+
+embeddings_model = MistralAIEmbeddings(api_key= Config.mistral_api_key,model="mistral-embed-2312")
     
 
 # Sample documents
@@ -249,8 +251,8 @@ def exercise_vector_store_setup():
 
 if __name__ == "__main__":
     # chroma_basics()
-    # similarity_search_with_scores()
+    similarity_search_with_scores()
     # metadata_filtering()
     # as_retriever()
     # persist_chroma()
-    exercise_vector_store_setup()
+    # exercise_vector_store_setup()
