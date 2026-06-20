@@ -1,0 +1,68 @@
+from langchain_chroma import Chroma
+from langchain_mistralai import MistralAIEmbeddings
+from langchain_community.retrievers import BM25Retriever
+from langchain_classic.retrievers import EnsembleRetriever
+from langchain_core.documents import Document
+from config import Config
+
+embeddings = MistralAIEmbeddings(api_key=Config.mistral_api_key, model="mistral-embed-2312")
+
+
+
+documents = [
+    Document( 
+        page_content="Product SKU-7742X is our flagship router. It supports 'gigabit' speeds and advanced QoS features.",
+        metadata={'type': 'product'}
+    ),
+    Document(
+        page_content="For network connectivity issues, first check the 'ethernet' cable and router status lights.",
+        metadata={'type': 'troubleshooting'}
+    ),
+    Document(
+        page_content="Error code E_CONN_REFUSED indicates the server rejected the connection. Check firewall settings.",
+        metadata={'type': 'error'}
+    ),
+    Document(
+        page_content='The authentication process requires valid credentials. '
+                     'Use OAuth2 for secure API access.',
+        metadata={'type': 'auth'}
+    ),
+    Document(
+        page_content='Router configuration guide: Access the admin panel '
+                     'at 192.168.1.1 to modify settings.',
+        metadata={'type': 'config'}
+    ),
+    Document(
+        page_content='WCAG 2.1 compliance requires all images to have '
+                     'alt text and sufficient color contrast.',
+        metadata={'type': 'compliance'}
+    ),
+]
+
+print(f"Loaded {len(documents)} documents")
+
+vectorstore = Chroma.from_documents(
+    documents,
+    embeddings,
+    collection_name='hybrid_test'
+)
+
+vector_retriever = vectorstore.as_retriever(
+    search_kwargs = {'k':3}
+)
+
+print('Vector retriever ready')
+
+bm25_retriever = BM25Retriever.from_documents(
+    documents,
+    k=3
+)
+
+print('BM25 retriever ready')
+
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[bm25_retriever, vector_retriever],
+    weights=[0.5,0.5]
+)
+
+print("Hybrid Retriever is ready")
