@@ -12,6 +12,7 @@ dependencies = [
     "langchain-classic>=1.0.8",
     "langchain-community>=0.4.2",
     "langchain-core>=1.4.7",
+    "langchain-experimental>=0.4.2",
     "langchain-mistralai>=1.1.5",
     "langgraph>=1.2.5",
     "langsmith>=0.8.15",
